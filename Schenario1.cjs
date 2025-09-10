@@ -89,7 +89,7 @@ router.post('/add',async(req,res)=>{
     }
 })
 // PUT /products/:id
-router.put('/:id',async(req,res)=>{
+router.post('/:id',async(req,res)=>{
     const {name,price}=req.body;
     try{
         const updateProd=await productModel.findOneAndUpdate({id:req.params.id},{name,price},{new:true});
