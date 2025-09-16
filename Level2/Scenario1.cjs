@@ -15,7 +15,7 @@ app.use('/api/products',router);
 const SECRET_API_KEY='mysecretkey123';
 
 const apiKeyAuth=(req,res,next)=>{
-    const apikey=req.header['x-api-key'];
+    const apikey=req.headers['x-api-key'];
     if(!apikey || apikey!==SECRET_API_KEY){
         return res.status(401).json({error:"Access is not authorized"});
     }
