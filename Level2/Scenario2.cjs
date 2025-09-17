@@ -18,9 +18,9 @@ const notificationsurl='https://api.example.com/notifications/';
 
 const getDashboardData=async(userId)=>{
     try{
-        const [profileresponce,orderresponce,notificationresponce]=await Promice.all([
+        const [profileresponce,orderresponce,notificationresponce]=await Promise.all([
             fetch(`${profileurl}${userId}`),
-            fetch(`${orderurl}${userId}`),
+            fetch(`${ordersurl}${userId}`),
             fetch(`${notificationsurl}${userId}`)
         ])
         if(!profileresponce.ok){
@@ -32,7 +32,7 @@ const getDashboardData=async(userId)=>{
         if(!notificationresponce.ok){
             throw new Error("Failed to fetch notification data");
         }
-        const {profile,orders,notifications}=await Promise.all([
+        const [profile, orders, notifications] = await Promise.all([
             profileresponce.json(),
             orderresponce.json(),
             notificationresponce.json()
