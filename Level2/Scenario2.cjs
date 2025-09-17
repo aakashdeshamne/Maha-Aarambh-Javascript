@@ -44,3 +44,28 @@ const getDashboardData=async(userId)=>{
         throw error;
     }
 }
+getDashboardData(123).then(data=>{
+    console.log(data);
+}).catch(err=>{
+    console.error(err);
+});
+
+//Much cleaner and faster way
+const getDashboardData2=async(userId)=>{
+    try{
+        const responce=await Promise.all([
+            fetch(`${profileurl}${userId}`),
+            fetch(`${ordersurl}${userId}`),
+            fetch(`${notificationsurl}${userId}`)
+        ])
+        if(!responce.every(res=>res.ok)){
+            throw new Error("Failed to fetch all data");
+        }
+        const [profile,order,notification]=await Promise.all(responce.map(res=>res.json()));
+        return {profile,order,notification};
+    }
+   catch(error){
+       console.log("Error while fetching data",error);
+       throw error;
+   }
+}
