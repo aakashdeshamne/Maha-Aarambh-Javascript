@@ -18,3 +18,66 @@
 // 4)If any step fails (e.g., insufficient funds), 
 // it must abort the transaction so that no changes are saved.
 
+const mongoose=require("mongoose");
+const url='mongodb://0.0.1:27017/bankDB';
+
+const connection=async(url)=>{
+    try{
+        await mongoose.connect(url,{
+            useNewUrlParser:true,
+            useUnifiedTopology:true
+        });
+        console.log("Connected to MongoDB");
+    }
+    catch(error){
+        console.log("Failed to connect to MongoDB"+error.message);
+    }
+}
+connection(url);
+
+const accountSchema=new mongoose.Schema({
+    accountId:{
+        type:Number,
+        require:true,
+        unique:true
+    },
+    balance:{
+        type:Number,
+        require:true,
+        min:[0,'Balance cannot be negative']
+    }
+})
+const accountModel=mongoose.model('Account',accountSchema);
+
+const transaferMoney=async(senderAccountId,recieverAccountId,amount)=>{
+    const session=await mongoose.startSession();
+    session.startSession();
+    try{
+        const senderAccount=await accountModel.findOne({accountId:senderAccountId}).session(session);
+        if(!senderAccount){
+            throw new Error("Sender account not found");
+        }
+        if(senderAccount.balance<amount){
+            throw new Error("Insufficient funds in sender account");
+        }
+        senderAccount.balance-=amount;
+        await senderAccount.save();
+
+        const recieverAccount=await accountModel.findOne({accountId:recieverAccountId}).session(session);
+        if(!recieverAccount){
+            throw new Error("Reciever account not found");
+        }
+        recieverAccount.balance+=amount;
+        await recieverAccount.save();
+        await session.commitTransaction();
+        console.log("Transaction successful");
+    }
+    catch(error){
+        await session.abortTransaction();
+        console.log("transaction failed: "+error.message);
+    }
+}
+
+transaferMoney(1,2,50);
+
+
