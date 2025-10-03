@@ -1,0 +1,36 @@
+# // 8. Writing a Basic Dockerfile
+
+# // Scenario: You need to containerize your Node.js application to ensure it runs consistently across
+# //  different environments (development, staging, production).
+# // Task: Write a Dockerfile for your Express application. The Dockerfile should:
+
+# // Start from an official Node.js base image (e.g., node:18-alpine).
+
+# // Set a working directory inside the container.
+
+# // Copy package.json and package-lock.json and run npm install.
+
+# // Copy the rest of your application code into the container.
+
+# // Expose the port your application runs on.
+
+# // Define the command to start the application when the container launches.
+
+# //sample docker file
+
+# Use an official Node.js runtime as a parent image
+from node:18-alpine
+# Set the working directory in the container
+WORKDIR /usr/src/app
+# Copy package.json and package-lock.json to the working directory
+COPY package*.json ./
+# Install the application dependencies
+RUN npm install
+# Copy the rest of the application code to the working directory
+COPY . .
+# Expose the port the application runs on
+EXPOSE 3000
+# Define the command to start the application
+CMD ["node", "app.js"]
+
+
